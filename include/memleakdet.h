@@ -66,8 +66,8 @@ typedef enum{
 } data_type_t;
 
 struct struct_db_t{
-    struct struct_db_t* next;
-    struct struct_db_t* tail;
+    struct db_rec_t* head;
+    struct db_rec_t* tail;
     unsigned int size;
 };
 
