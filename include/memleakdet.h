@@ -90,7 +90,7 @@ struct field_info_t{
 void print_struct_db(struct_db_t* struct_db);
 void print_struct_info(db_rec_t* structure);
 struct_db_t* create_struct_db(void);
-db_rec_t* register_structure(struct_db_t* db, const char* struct_name, unsigned int sizeof_structure, field_info_t* fields);
+db_rec_t* register_structure(struct_db_t* db, const char* struct_name, unsigned int sizeof_structure, field_info_t* fields, unsigned int num_fields);
 bool add_struct_to_db(db_rec_t* structure, struct_db_t* db);
 
 
