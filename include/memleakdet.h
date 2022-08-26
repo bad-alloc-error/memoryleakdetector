@@ -1,9 +1,11 @@
 #ifndef _MEMLEAKDET_H_
 #define _MEMLEAKDET_H_
 
+#include<stdbool.h>
+
 #define MAX_STRUCT_NAME_SIZE 100
 #define MAX_FIELD_NAME 100
-typedef struct struct_db_t struc_db_t;
+typedef struct struct_db_t struct_db_t;
 typedef struct db_rec_t db_rec_t;
 typedef struct field_info_t field_info_t;
 
@@ -65,6 +67,7 @@ typedef enum{
 
 struct struct_db_t{
     struct struct_db_t* next;
+    struct struct_db_t* tail;
     unsigned int size;
 };
 
@@ -83,6 +86,11 @@ struct field_info_t{
     data_type_t data_type;
     char nested_struct_name[MAX_STRUCT_NAME_SIZE];
 };
+
+void print_struct_db(struct_db_t* struct_db);
+void print_struct_info(db_rec_t* structure);
+void register_structure(struct_db_t* db, const char* struct_name, field_info_t* fields);
+bool add_struct_to_db(db_rec_t* structure, struct_db_t* db);
 
 
 #endif
