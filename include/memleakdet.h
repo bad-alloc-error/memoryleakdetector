@@ -44,7 +44,7 @@ typedef struct field_info_t field_info_t;
 * 
 *            name        size                    offset  data_type     nested_struct_name
 *            ---------------------------------------------------------------------------                                                   
-*   fields[2]| "idade"   | sizeof(unsigned int) |  84   | UINT32      | NULL           |
+*   fields[2]| "idade"   | sizeof(unsigned int) |  80   | UINT32      | NULL           |
 *            ---------------------------------------------------------------------------
 *
 *   A estrutura field_info_t armazenada informações de cada campo da estrutura registrada
