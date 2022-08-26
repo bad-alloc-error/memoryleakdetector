@@ -53,3 +53,15 @@ void print_struct_db(struct_db_t* struct_db){
 
 }
 
+void print_struct_info(db_rec_t* structure){
+    
+    printf("Nome da Estrutura: [ %s ] Tamanho: [ %d ] Número de Campos: [ %d ]\n", 
+        structure->struct_name, structure->size, structure->num_fields);
+
+        unsigned int count = 0;
+                 
+        for(field_info_t* field = structure->fields; count < structure->num_fields; count++){
+            printf("Nome: [ %s ] Tamanho: [ %d ] Offset: [ %d ] Tipo: [ %d ]\n",
+                field->name, field->size, field->offset, field->data_type);   
+        }
+}
