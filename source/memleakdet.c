@@ -23,9 +23,6 @@ db_rec_t* register_structure(struct_db_t* db, const char* struct_name, unsigned 
     struct_rec->size = sizeof_structure;
     struct_rec->num_fields = num_fields;
     struct_rec->fields = fields;
-
-    printf("Nome estrutura: %s - tamanho da estrutura: %d - n. campos: %d - ponteiro para campos: %p - endereço da db_rec_t: %p\n",
-        struct_name, sizeof_structure, num_fields, fields, struct_rec);
         
     /*adiciona a estrutura ao "structure database"*/
     if(!add_struct_to_db(struct_rec, db)){
@@ -37,12 +34,10 @@ db_rec_t* register_structure(struct_db_t* db, const char* struct_name, unsigned 
 
 bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
 
-    printf("struct_db_t: head: %p tail: %p tamanho: %d\n", db->head, db->tail, db->size);
     if(db->head == NULL && db->tail == NULL){
         db->head = structure;
         db->tail = structure;
         db->size++;
-        printf("db_rec_t endereço: %p - db->head endereço: %p db->tail endereço: %p\n", structure, db->head, db->tail);
         return true;
     }
 
