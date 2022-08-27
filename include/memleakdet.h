@@ -65,27 +65,6 @@ typedef enum{
     OBJ_POINTER
 } data_type_t;
 
-struct struct_db_t{
-    struct db_rec_t* head;
-    struct db_rec_t* tail;
-    unsigned int size;
-};
-
-struct db_rec_t{
-    struct db_rec_t* next;
-    char struct_name[MAX_STRUCT_NAME_SIZE];
-    unsigned int size;
-    unsigned int num_fields;
-    struct field_info_t* fields;
-};
-
-struct field_info_t{
-    char name[MAX_FIELD_NAME];
-    unsigned int size;
-    unsigned int offset;
-    data_type_t data_type;
-    char nested_struct_name[MAX_STRUCT_NAME_SIZE];
-};
 
 void print_struct_db(struct_db_t* struct_db);
 void print_struct_info(db_rec_t* structure);
