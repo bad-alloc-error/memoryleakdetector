@@ -17,5 +17,13 @@ A lib irá manter uma "banco de dados" de estruturas que irá armazenar as infor
 
 A chave usada para encontrar esse registros será o nome da propria estrutura.
 
+<b>Segunda Fase: Object Database</b>
+
+Toda vez que a aplicação cliente alocar novos chunks de memória, pode ser via malloc, calloc, usando outro gerenciador de memoria ou uma função wrapper que é o caso aqui, a lib tem que ser informada sobre essa alocação com os metadados sobre o objeto.
+
+A lib então vai armazenar informações relevantes sobre o objeto, como os detalhes da estrutura do objeto, endereço...
+
+Objeto entende-se como as estruturas que são usadas pela aplicação e foram instanciadas.
+
 
 
