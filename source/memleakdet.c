@@ -5,6 +5,28 @@
 #include"../include/memleakdet.h"
 
 
+struct struct_db_t{
+    struct db_rec_t* head;
+    struct db_rec_t* tail;
+    unsigned int size;
+};
+
+struct db_rec_t{
+    struct db_rec_t* next;
+    char struct_name[MAX_STRUCT_NAME_SIZE];
+    unsigned int size;
+    unsigned int num_fields;
+    struct field_info_t* fields;
+};
+
+struct field_info_t{
+    char name[MAX_FIELD_NAME];
+    unsigned int size;
+    unsigned int offset;
+    data_type_t data_type;
+    char nested_struct_name[MAX_STRUCT_NAME_SIZE];
+};
+
 struct_db_t* create_struct_db(void){
     struct_db_t* db = (struct_db_t *)malloc(sizeof(struct_db_t));
     db->head = NULL;
@@ -46,6 +68,11 @@ bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
     structure->next = node;
     db->size++;
     return true;
+
+}
+
+db_rec_t* db_lookup(struct_db_t* struct_db, char* struct_name){
+
 
 }
 
