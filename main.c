@@ -28,8 +28,17 @@ int main(){
 
     db_rec_t* new_struct = register_structure(struct_db, "estudante1", sizeof(estudante_t), &students_info[0], 3);
 
-    print_struct_db(struct_db);
+    // print_struct_db(struct_db);
     print_struct_info(new_struct);
+
+    /*testando o object_db_t e função fmalloc()*/
+
+    object_db_t* obj_db = create_object_database();
+    estudante_t* filipe = fmalloc(obj_db, "estudante_t", 1);
+    // estudante_t* bruna = fmalloc(obj_db, "estudante_t", 1);
+    // estudante_t* adelia = fmalloc(obj_db, "estudante_t", 1);
+
+    print_object_details(obj_db);
 
     return 0;
 }
