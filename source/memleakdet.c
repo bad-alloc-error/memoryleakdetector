@@ -87,7 +87,7 @@ bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
 }
 
 /*Procura por determinado registro(de estrutura) e retorna o endereço para esse registro*/
-db_rec_t* db_lookup(struct_db_t* struct_db, char* struct_name){
+db_rec_t* db_peek(struct_db_t* struct_db, char* struct_name){
 
     db_rec_t* node = struct_db->head;
     while(!strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
@@ -105,10 +105,11 @@ db_rec_t* db_lookup(struct_db_t* struct_db, char* struct_name){
 }
 
 void* fmalloc(object_db_t* obj_db, const char* struct_name, unsigned int units){
-    db_rec_t* struct_rec = db_lookup(obj_db->struct_rec, struct_name);
+    db_rec_t* struct_rec = db_peek(obj_db->struct_rec, struct_name);
     void* ptr = calloc(units, struct_rec->size);
     
     /*adiciona o objeto p/ objetc_db*/
+    register_object(obj_db, ptr, units, struct_rec);
 
     return ptr;
 }   
@@ -116,10 +117,10 @@ void* fmalloc(object_db_t* obj_db, const char* struct_name, unsigned int units){
 static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, db_rec_t* struct_rec){
    
    /*faz a busca para checar se não se trata do mesmo objeto*/
-    object_db_rec_t* obj_rec = obj_db_lookup(obj_db, ptr);
+    object_db_rec_t* obj_rec = obj_db_peek(obj_db, ptr);
 
     if(obj_rec == ptr){
-        fprintf(stderr, "Não é permitido registrar duas vezes o mesmo objeto!\n");
+        fprintf(stderr, "[LOG]Não é permitido registrar duas vezes o mesmo objeto!\n");
         return;
     }
 
@@ -145,13 +146,13 @@ static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, 
     obj_db->size++;
 }
 
-object_db_rec_t* obj_db_lookup(object_db_t* obj_db, void* ptr){
+object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr){
     object_db_rec_t* node = obj_db->head;
 
     while(!node->ptr_key == ptr){    
 
         if(node->next == NULL){
-            fprintf(stderr, "Objeto não localizado!\n");
+            fprintf(stderr, "[LOG]Objeto não localizado!\n");
             return NULL;
         }
 
