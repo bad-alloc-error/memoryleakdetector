@@ -139,7 +139,7 @@ static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, 
         return;
     }
 
-    /*se não for o primeiro, faz os backups de ponteiro*/
+    /*se não for o unico, faz os backups de ponteiro*/
     object_db_rec_t* node = obj_db->tail;
     node->next = obj_rec;
     obj_db->tail = obj_rec;
@@ -185,3 +185,14 @@ void print_struct_info(db_rec_t* structure){
                 field->name, field->size, field->offset, field->data_type);   
         }
 }
+
+void print_object_details(object_db_t* obj_db){
+    object_db_rec_t* node = obj_db->head;
+
+    printf("Número de objetos registrados: [ %d ]\n", obj_db->size);
+    while(node){
+        printf(" - Nome da Estrutura: [ %s ]\n - Unidades Alocadas: [ %d ]\n - Referência do Objeto: [ %p ]\n Próxima Referência: [ %p]\n",
+            node->struct_rec->struct_name, node->units, node, node->next);
+        node = node->next;
+    }
+} 
