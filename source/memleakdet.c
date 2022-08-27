@@ -35,6 +35,7 @@ struct_db_t* create_struct_db(void){
     return db;
 }
 
+/*Registra a estrutura que será utilizada pela aplicação cliente*/
 db_rec_t* register_structure(struct_db_t* db, const char* struct_name, unsigned int sizeof_structure, field_info_t* fields, unsigned int num_fields){
 
    db_rec_t* struct_rec = (db_rec_t *)malloc(sizeof(db_rec_t));
@@ -53,7 +54,7 @@ db_rec_t* register_structure(struct_db_t* db, const char* struct_name, unsigned 
 
     return struct_rec;
 }
-
+/*Adiciona nosso registro ao banco de registro de estruturas*/
 bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
 
     if(db->head == NULL && db->tail == NULL){
@@ -71,9 +72,22 @@ bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
 
 }
 
+/*Procura por determinado registro e retorna o endereço para esse registro*/
 db_rec_t* db_lookup(struct_db_t* struct_db, char* struct_name){
 
+    db_rec_t* node = struct_db->head;
+    while(!strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
 
+        /*Caso não exista o registro*/
+        if(node->next == NULL){
+            fprintf(stderr, "Não existe o registro informado!\n");
+            return;
+        }
+
+        node = node->next;
+    }
+
+    return node;
 }
 
 void print_struct_db(struct_db_t* struct_db){
