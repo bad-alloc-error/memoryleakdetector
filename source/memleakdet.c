@@ -27,6 +27,20 @@ struct field_info_t{
     char nested_struct_name[MAX_STRUCT_NAME_SIZE];
 };
 
+struct object_db_t{
+    struct_db_t* struct_rec;
+    object_db_rec_t* head;
+    object_db_rec_t* tail;
+    unsigned int size;
+};
+
+struct object_db_rec_t{
+    object_db_rec_t* next;
+    void* ptr_key;
+    unsigned int units;
+    db_rec_t* struct_rec;
+};
+
 struct_db_t* create_struct_db(void){
     struct_db_t* db = (struct_db_t *)malloc(sizeof(struct_db_t));
     db->head = NULL;
@@ -72,7 +86,7 @@ bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
 
 }
 
-/*Procura por determinado registro e retorna o endereço para esse registro*/
+/*Procura por determinado registro(de estrutura) e retorna o endereço para esse registro*/
 db_rec_t* db_lookup(struct_db_t* struct_db, char* struct_name){
 
     db_rec_t* node = struct_db->head;
@@ -80,8 +94,65 @@ db_rec_t* db_lookup(struct_db_t* struct_db, char* struct_name){
 
         /*Caso não exista o registro*/
         if(node->next == NULL){
-            fprintf(stderr, "Não existe o registro informado!\n");
-            return;
+            fprintf(stderr, "[LOG] Não existe o registro informado!\n");
+            return NULL;
+        }
+
+        node = node->next;
+    }
+
+    return node;
+}
+
+void* fmalloc(object_db_t* obj_db, const char* struct_name, unsigned int units){
+    db_rec_t* struct_rec = db_lookup(obj_db->struct_rec, struct_name);
+    void* ptr = calloc(units, struct_rec->size);
+    
+    /*adiciona o objeto p/ objetc_db*/
+
+    return ptr;
+}   
+
+static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, db_rec_t* struct_rec){
+   
+   /*faz a busca para checar se não se trata do mesmo objeto*/
+    object_db_rec_t* obj_rec = obj_db_lookup(obj_db, ptr);
+
+    if(obj_rec == ptr){
+        fprintf(stderr, "Não é permitido registrar duas vezes o mesmo objeto!\n");
+        return;
+    }
+
+    /*popula o registro*/
+    obj_rec = calloc(1, sizeof(object_db_rec_t));
+    obj_rec->next = NULL;
+    obj_rec->ptr_key = ptr;
+    obj_rec->struct_rec = struct_rec;
+    obj_rec->units = units;
+
+    /*agora adiciona o objeto no banco de objetos*/
+    if(obj_db->head == NULL && obj_db->tail == NULL){
+        obj_db->head = obj_rec;
+        obj_db->tail = obj_rec;
+        obj_db->size++;
+        return;
+    }
+
+    /*se não for o primeiro, faz os backups de ponteiro*/
+    object_db_rec_t* node = obj_db->tail;
+    node->next = obj_rec;
+    obj_db->tail = obj_rec;
+    obj_db->size++;
+}
+
+object_db_rec_t* obj_db_lookup(object_db_t* obj_db, void* ptr){
+    object_db_rec_t* node = obj_db->head;
+
+    while(!node->ptr_key == ptr){    
+
+        if(node->next == NULL){
+            fprintf(stderr, "Objeto não localizado!\n");
+            return NULL;
         }
 
         node = node->next;
