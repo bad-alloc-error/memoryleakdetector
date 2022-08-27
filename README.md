@@ -25,5 +25,5 @@ A lib então vai armazenar informações relevantes sobre o objeto, como os deta
 
 Objeto entende-se como as estruturas que são usadas pela aplicação e foram instanciadas.
 
-
+Feito isso sera populado a estrutura com essas informações do novo objeto.
 
