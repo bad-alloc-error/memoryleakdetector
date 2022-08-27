@@ -79,7 +79,7 @@ bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
 }
 
 /*Procura por determinado registro(de estrutura) e retorna o endereço para esse registro*/
-db_rec_t* db_peek(struct_db_t* struct_db, char* struct_name){
+db_rec_t* db_peek(struct_db_t* struct_db, const char* struct_name){
 
     db_rec_t* node = struct_db->head;
     while(!strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
@@ -151,9 +151,12 @@ static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, 
 }
 
 object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr){
+   
     object_db_rec_t* node = obj_db->head;
 
-    while(!node->ptr_key == ptr){    
+    if(node == NULL){ return NULL; }
+
+    while(node && node->ptr_key != ptr){    
 
         if(node->next == NULL){
             fprintf(stderr, "[LOG]Objeto não localizado!\n");
