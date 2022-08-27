@@ -71,8 +71,8 @@ bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
     }
 
     db_rec_t* node = db->tail;
+    node->next = structure;
     db->tail = structure;
-    structure->next = node;
     db->size++;
     return true;
 
@@ -82,21 +82,28 @@ bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
 db_rec_t* db_peek(struct_db_t* struct_db, const char* struct_name){
 
     db_rec_t* node = struct_db->head;
-    while(!strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
 
-        /*Caso não exista o registro*/
-        if(node->next == NULL){
-            fprintf(stderr, "[LOG] Não existe o registro informado!\n");
-            return NULL;
+    if(!node){ return NULL; }
+    for(; node; node = node->next){
+        if(strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
+            return node;
         }
-
-        node = node->next;
     }
+    // while(!strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
 
-    return node;
+    //     /*Caso não exista o registro*/
+    //     if(node->next == NULL){
+    //         fprintf(stderr, "[LOG] Não existe o registro informado!\n");
+    //         return NULL;
+    //     }
+
+    //     node = node->next;
+    // }
+    return NULL;
 }
 
 void* fmalloc(object_db_t* obj_db, const char* struct_name, unsigned int units){
+
     db_rec_t* struct_rec = db_peek(obj_db->struct_rec, struct_name);
     void* ptr = calloc(units, struct_rec->size);
     
@@ -157,12 +164,6 @@ object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr){
     if(node == NULL){ return NULL; }
 
     while(node && node->ptr_key != ptr){    
-
-        if(node->next == NULL){
-            fprintf(stderr, "[LOG]Objeto não localizado!\n");
-            return NULL;
-        }
-
         node = node->next;
     }
 
