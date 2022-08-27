@@ -19,14 +19,6 @@ struct db_rec_t{
     struct field_info_t* fields;
 };
 
-struct field_info_t{
-    char name[MAX_FIELD_NAME];
-    unsigned int size;
-    unsigned int offset;
-    data_type_t data_type;
-    char nested_struct_name[MAX_STRUCT_NAME_SIZE];
-};
-
 struct object_db_t{
     struct_db_t* struct_rec;
     object_db_rec_t* head;
@@ -113,6 +105,18 @@ void* fmalloc(object_db_t* obj_db, const char* struct_name, unsigned int units){
 
     return ptr;
 }   
+
+object_db_t* create_object_database(void){
+
+    object_db_t* obj_db = calloc(1, sizeof(object_db_t));
+
+    obj_db->head = NULL;
+    obj_db->tail = NULL;
+    obj_db->size = 0;
+    obj_db->struct_rec = NULL;
+
+    return obj_db;
+}
 
 static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, db_rec_t* struct_rec){
    
