@@ -15,6 +15,8 @@ int main(){
 
     struct_db_t* struct_db = create_struct_db();
     estudante_t estudante1;
+    estudante_t estudante2;
+    estudante_t estudante3;
 
     // strncpy(estudante1.nome, "Filipe", strlen("Filipe"));
     // strncpy(estudante1.email, "bad-alloc-error@yandex.com", strlen("bad-alloc-error@yandex.com"));
@@ -26,17 +28,21 @@ int main(){
         {"idade", sizeof(unsigned int), offsetof(estudante_t, idade), UINT32, 0}
     };
 
-    db_rec_t* new_struct = register_structure(struct_db, "estudante1", sizeof(estudante_t), &students_info[0], 3);
+    db_rec_t* struct1 = register_structure(struct_db, "estudante_t", sizeof(estudante_t), &students_info[0], 3);
+    db_rec_t* struct2 = register_structure(struct_db, "estudante_t", sizeof(estudante_t), &students_info[0], 3);
+    // db_rec_t* struct3 = register_structure(struct_db, "estudante3", sizeof(estudante_t), &students_info[0], 3);
+    // db_rec_t* struct4 = register_structure(struct_db, "estudante2", sizeof(estudante_t), &students_info[0], 3);
 
     // print_struct_db(struct_db);
-    print_struct_info(new_struct);
+    // print_struct_info(new_struct);
 
     /*testando o object_db_t e função fmalloc()*/
 
-    object_db_t* obj_db = create_object_database();
+    object_db_t* obj_db = create_object_database(struct_db);
     estudante_t* filipe = fmalloc(obj_db, "estudante_t", 1);
-    // estudante_t* bruna = fmalloc(obj_db, "estudante_t", 1);
+    estudante_t* bruna = fmalloc(obj_db, "estudante_t", 1);
     // estudante_t* adelia = fmalloc(obj_db, "estudante_t", 1);
+    // estudante_t* maria = fmalloc(obj_db, "estudante2", 1);
 
     print_object_details(obj_db);
 
