@@ -20,7 +20,7 @@ struct db_rec_t{
 };
 
 struct object_db_t{
-    struct_db_t* struct_rec;
+    struct_db_t* struct_db;
     object_db_rec_t* head;
     object_db_rec_t* tail;
     unsigned int size;
@@ -79,32 +79,30 @@ bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
 }
 
 /*Procura por determinado registro(de estrutura) e retorna o endereço para esse registro*/
-db_rec_t* db_peek(struct_db_t* struct_db, const char* struct_name){
+db_rec_t* db_peek(struct_db_t* struct_db, char* struct_name){
 
     db_rec_t* node = struct_db->head;
 
-    if(!node){ return NULL; }
-    for(; node; node = node->next){
-        if(strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
-            return node;
+    while(node && !strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
+        
+        if(node->next == NULL && strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) != 0){
+            fprintf(stderr, "[LOG]Não existe registro da estrutura [ %s ].\nEstruturas registradas:\n", struct_name);
+            print_struct_db(struct_db);
+            return NULL;
         }
+        node = node->next;
     }
-    // while(!strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
-
-    //     /*Caso não exista o registro*/
-    //     if(node->next == NULL){
-    //         fprintf(stderr, "[LOG] Não existe o registro informado!\n");
-    //         return NULL;
-    //     }
-
-    //     node = node->next;
-    // }
-    return NULL;
+    return node;
 }
 
-void* fmalloc(object_db_t* obj_db, const char* struct_name, unsigned int units){
+void* fmalloc(object_db_t* obj_db, char* struct_name, unsigned int units){
 
-    db_rec_t* struct_rec = db_peek(obj_db->struct_rec, struct_name);
+    db_rec_t* struct_rec = db_peek(obj_db->struct_db, struct_name);
+
+    if(!struct_rec){
+        fprintf(stderr, "Erro\n");
+        exit(EXIT_FAILURE);
+    }
     void* ptr = calloc(units, struct_rec->size);
     
     /*adiciona o objeto p/ objetc_db*/
@@ -113,14 +111,14 @@ void* fmalloc(object_db_t* obj_db, const char* struct_name, unsigned int units){
     return ptr;
 }   
 
-object_db_t* create_object_database(void){
+object_db_t* create_object_database(struct_db_t* struct_db){
 
     object_db_t* obj_db = calloc(1, sizeof(object_db_t));
 
     obj_db->head = NULL;
     obj_db->tail = NULL;
     obj_db->size = 0;
-    obj_db->struct_rec = NULL;
+    obj_db->struct_db = struct_db;
 
     return obj_db;
 }
@@ -130,7 +128,7 @@ static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, 
    /*faz a busca para checar se não se trata do mesmo objeto*/
     object_db_rec_t* obj_rec = obj_db_peek(obj_db, ptr);
 
-    if(obj_rec == ptr){
+    if(!obj_rec){
         fprintf(stderr, "[LOG]Não é permitido registrar duas vezes o mesmo objeto!\n");
         return;
     }
@@ -163,17 +161,22 @@ object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr){
 
     if(node == NULL){ return NULL; }
 
-    while(node && node->ptr_key != ptr){    
+    while(node){
+
+        if(node->ptr_key == ptr){
+            return node;
+        }    
+
         node = node->next;
     }
 
-    return node;
+    return NULL;
 }
 
 void print_struct_db(struct_db_t* struct_db){
     
     for(db_rec_t* node = struct_db->head; node; node = node->next){
-        printf("Nome da Estrutura: [ %s ] Tamanho: [ %d ] Número de Campos: [ %d ]\n",
+        printf("Estrutura: [ %s ] Tamanho: [ %d ] Número de Campos: [ %d ]\n",
              node->struct_name, node->size, node->num_fields);
 
     }
@@ -199,7 +202,7 @@ void print_object_details(object_db_t* obj_db){
 
     printf("Número de objetos registrados: [ %d ]\n", obj_db->size);
     while(node){
-        printf(" - Nome da Estrutura: [ %s ]\n - Unidades Alocadas: [ %d ]\n - Referência do Objeto: [ %p ]\n Próxima Referência: [ %p]\n",
+        printf(" - Nome da Estrutura: [ %s ]\n - Unidades Alocadas: [ %d ]\n - Referência do Objeto: [ %p ]\n - Próxima Referência: [ %p ]\n",
             node->struct_rec->struct_name, node->units, node, node->next);
         node = node->next;
     }
