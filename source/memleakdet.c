@@ -1,6 +1,7 @@
 #include<string.h>
 #include<stdlib.h>
 #include<stdio.h>
+#include<assert.h>
 
 #include"../include/memleakdet.h"
 
@@ -95,9 +96,9 @@ db_rec_t* db_peek(struct_db_t* struct_db, char* struct_name){
     return node;
 }
 
-void* fmalloc(object_db_t* obj_db, char* struct_name, unsigned int units){
+void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int units){
 
-    db_rec_t* struct_rec = db_peek(obj_db->struct_db, struct_name);
+    db_rec_t* struct_rec = db_peek(obj_db->struct_db, struct_type);
 
     if(!struct_rec){
         fprintf(stderr, "Erro\n");
@@ -128,10 +129,7 @@ static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, 
    /*faz a busca para checar se não se trata do mesmo objeto*/
     object_db_rec_t* obj_rec = obj_db_peek(obj_db, ptr);
 
-    if(!obj_rec){
-        fprintf(stderr, "[LOG]Não é permitido registrar duas vezes o mesmo objeto!\n");
-        return;
-    }
+    assert(!obj_rec);
 
     /*popula o registro*/
     obj_rec = calloc(1, sizeof(object_db_rec_t));
@@ -155,7 +153,7 @@ static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, 
     obj_db->size++;
 }
 
-object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr){
+static object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr){
    
     object_db_rec_t* node = obj_db->head;
 
