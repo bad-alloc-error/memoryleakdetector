@@ -185,12 +185,13 @@ void print_struct_db(struct_db_t* struct_db){
 void print_struct_info(db_rec_t* structure){
     
     field_info_t* field = NULL;
-    printf("Nome da Estrutura: [ %s ] Tamanho: [ %d ] Número de Campos: [ %d ]\n", 
+    printf("Dump de Estrutura Registrada\n");
+    printf(" + Tipo da Estrutura: [ %s ] - Tamanho: [ %d ] - Número de Campos: [ %d ]\n", 
         structure->struct_name, structure->size, structure->num_fields);
                  
         for(unsigned int i = 0; i < structure->num_fields; i++){
             field = &structure->fields[i];
-            printf("Nome: [ %s ] Tamanho: [ %d ] Offset: [ %d ] Tipo: [ %d ]\n",
+            printf(" + Campo: [ %s ] - Tamanho: [ %d ] - Offset: [ %d ] - Tipo: [ %d ]\n",
                 field->name, field->size, field->offset, field->data_type);   
         }
 }
@@ -200,7 +201,7 @@ void print_object_details(object_db_t* obj_db){
 
     printf("Número de objetos registrados: [ %d ]\n", obj_db->size);
     while(node){
-        printf(" - Nome da Estrutura: [ %s ]\n - Unidades Alocadas: [ %d ]\n - Referência do Objeto: [ %p ]\n - Próxima Referência: [ %p ]\n",
+        printf(" - Tipo da Estrutura: [ %s ]\n - Unidades Alocadas: [ %d ]\n - Referência do Objeto: [ %p ]\n - Próxima Referência: [ %p ]\n",
             node->struct_rec->struct_name, node->units, node, node->next);
         node = node->next;
     }
