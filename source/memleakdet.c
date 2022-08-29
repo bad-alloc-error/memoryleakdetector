@@ -196,15 +196,16 @@ void dump_struct_info(db_rec_t* structure){
         }
 }
 
-void dump_object_details(object_db_t* obj_db){
+void dump_object_db_details(object_db_t* obj_db){
     object_db_rec_t* node = obj_db->head;
-
     printf("Número de objetos registrados: [ %d ]\n", obj_db->size);
     while(node){
         printf(" - Tipo da Estrutura: [ %s ]\n - Unidades Alocadas: [ %d ]\n - Referência do Objeto: [ %p ]\n - Próxima Referência: [ %p ]\n",
             node->struct_rec->struct_name, node->units, node, node->next);
         node = node->next;
+        printf("---------------------------------------------------------------\n\n");
     }
+
 } 
 
 void dump_object_record_details(object_db_rec_t* obj_rec){
@@ -212,7 +213,7 @@ void dump_object_record_details(object_db_rec_t* obj_rec){
     field_info_t* f_info = NULL;
 
     printf("+ Detalhes da Instância\n");
-    printf(" - Tipo  [ %s ]\n", obj_rec->struct_rec->struct_name);
+    printf(" + Tipo  [ %s ]\n", obj_rec->struct_rec->struct_name);
     
     for(unsigned int obj_i = 0; obj_i < obj_rec->units; ++obj_i){
 
@@ -227,7 +228,7 @@ void dump_object_record_details(object_db_rec_t* obj_rec){
                 
                 case CHAR:
 
-                    printf(" + [ %s ][%d] -> [ %s ] = [ %d ]\n",
+                    printf(" + [ %s ][%d] -> [ %s ] = [ %s ]\n",
                     obj_rec->struct_rec->struct_name, obj_i, f_info->name,
                     (char *)(curr_obj + f_info->offset));
 
@@ -245,7 +246,7 @@ void dump_object_record_details(object_db_rec_t* obj_rec){
 
                 case FLOAT:
 
-                    printf(" + [ %s ][%d] -> [ %s ] = [ %d ]\n",
+                    printf(" + [ %s ][%d] -> [ %s ] = [ %f ]\n",
                     obj_rec->struct_rec->struct_name, obj_i, f_info->name,
                     *(float *)(curr_obj + f_info->offset));
 
@@ -253,7 +254,7 @@ void dump_object_record_details(object_db_rec_t* obj_rec){
                 
                 case DOUBLE:
 
-                    printf(" + [ %s ][%d] -> [ %s ] = [ %d ]\n",
+                    printf(" + [ %s ][%d] -> [ %s ] = [ %f ]\n",
                     obj_rec->struct_rec->struct_name, obj_i, f_info->name,
                     *(double *)(curr_obj + f_info->offset));
 
@@ -261,7 +262,7 @@ void dump_object_record_details(object_db_rec_t* obj_rec){
 
                 case OBJ_POINTER:
 
-                    printf(" + [ %s ][%d] -> [ %s ] = [ %d ]\n",
+                    printf(" + [ %s ][%d] -> [ %s ] = [ %p ]\n",
                     obj_rec->struct_rec->struct_name, obj_i, f_info->name,
                     (void *) *(int *)(curr_obj + f_info->offset));
 
@@ -272,3 +273,53 @@ void dump_object_record_details(object_db_rec_t* obj_rec){
         }
     }
 }
+
+void ffree(void* ptr, object_db_t* obj_db){
+
+    if(!ptr){
+        fprintf(stderr, "[LOG]Objeto não instanciado!\n");
+        return;
+    }
+    
+    object_db_rec_t* obj_rec = obj_db_peek(obj_db, ptr);
+
+     if(!obj_rec){
+        fprintf(stderr, "[LOG]Objeto não encontrado!\n");
+        return;
+    }
+
+    free(obj_rec->ptr_key);
+    remove_object_database(obj_rec, obj_db);
+}
+
+void remove_object_database(object_db_rec_t* obj_rec, object_db_t* obj_db){
+
+    if(!obj_db){
+        fprintf(stderr, "[LOG]Banco de objetos não existe!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    object_db_rec_t* node = obj_db->head;
+
+    if(node == obj_rec){
+        obj_db->head = obj_rec->next;
+        free(obj_rec);
+        obj_db->size--;
+        return;
+    }
+
+    /*já checamos a cabeça da lista, então node passa a ser o head->next*/
+    node = node->next;
+
+    /*enquanto o próximo nó não for o nó que queremos deletar...*/
+    while(node && node->next != obj_rec){
+        node = node->next;
+    }
+
+    /*o nó atual que é o anterior ao nó a ser deletado, aponta para o próximo nó do nó a ser deletado*/
+    node->next = obj_rec->next;
+
+    free(obj_rec);
+    obj_db->size--;
+}
+    
