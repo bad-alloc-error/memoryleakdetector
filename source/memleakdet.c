@@ -6,13 +6,13 @@
 #include"../include/memleakdet.h"
 
 struct struct_db_t{
-    struct db_rec_t* head;
-    struct db_rec_t* tail;
+    struct struct_meta_data_t* head;
+    struct struct_meta_data_t* tail;
     unsigned int size;
 };
 
-struct db_rec_t{
-    struct db_rec_t* next;
+struct struct_meta_data_t{
+    struct struct_meta_data_t* next;
     char struct_name[MAX_STRUCT_NAME_SIZE];
     unsigned int size;
     unsigned int num_fields;
@@ -21,16 +21,16 @@ struct db_rec_t{
 
 struct object_db_t{
     struct_db_t* struct_db;
-    object_db_rec_t* head;
-    object_db_rec_t* tail;
+    object_meta_data_t* head;
+    object_meta_data_t* tail;
     unsigned int size;
 };
 
-struct object_db_rec_t{
-    object_db_rec_t* next;
+struct object_meta_data_t{
+    object_meta_data_t* next;
     void* ptr_key;
     unsigned int units;
-    db_rec_t* struct_rec;
+    struct_meta_data_t* struct_rec;
 };
 
 struct_db_t* create_struct_database(void){
@@ -54,9 +54,9 @@ object_db_t* create_object_database(struct_db_t* struct_db){
 }
 
 /*Registra a estrutura que será utilizada pela aplicação cliente*/
-db_rec_t* register_structure(struct_db_t* db, const char* struct_name, unsigned int sizeof_structure, field_info_t* fields, unsigned int num_fields){
+struct_meta_data_t* register_structure(struct_db_t* db, const char* struct_name, unsigned int sizeof_structure, field_info_t* fields, unsigned int num_fields){
 
-   db_rec_t* struct_rec = (db_rec_t *)malloc(sizeof(db_rec_t));
+   struct_meta_data_t* struct_rec = (struct_meta_data_t *)malloc(sizeof(struct_meta_data_t));
 
     /*popula*/
     struct_rec->next = NULL;
@@ -74,7 +74,7 @@ db_rec_t* register_structure(struct_db_t* db, const char* struct_name, unsigned 
 }
 
 /*Adiciona nosso registro ao banco de registro de estruturas*/
-bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
+bool add_struct_to_db(struct_meta_data_t* structure, struct_db_t* db){
 
     if(db->head == NULL && db->tail == NULL){
         db->head = structure;
@@ -83,7 +83,7 @@ bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
         return true;
     }
 
-    db_rec_t* node = db->tail;
+    struct_meta_data_t* node = db->tail;
     node->next = structure;
     db->tail = structure;
     db->size++;
@@ -92,9 +92,9 @@ bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
 }
 
 /*Procura por determinado registro(de estrutura) e retorna o endereço para esse registro*/
-db_rec_t* db_peek(struct_db_t* struct_db, char* struct_name){
+struct_meta_data_t* db_peek(struct_db_t* struct_db, char* struct_name){
 
-    db_rec_t* node = struct_db->head;
+    struct_meta_data_t* node = struct_db->head;
 
     while(node && !strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
         
@@ -110,10 +110,10 @@ db_rec_t* db_peek(struct_db_t* struct_db, char* struct_name){
 
 void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int units){
 
-    db_rec_t* struct_rec = db_peek(obj_db->struct_db, struct_type);
+    struct_meta_data_t* struct_rec = db_peek(obj_db->struct_db, struct_type);
 
     if(!struct_rec){
-        fprintf(stderr, "Erro\n");
+        fprintf(stderr, "[LOG]Registro de Estrutura não encontrado!\n");
         exit(EXIT_FAILURE);
     }
     void* ptr = calloc(units, struct_rec->size);
@@ -124,15 +124,15 @@ void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int units){
     return ptr;
 }   
 
-static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, db_rec_t* struct_rec){
+static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, struct_meta_data_t* struct_rec){
    
    /*faz a busca para checar se não se trata do mesmo objeto*/
-    object_db_rec_t* obj_rec = obj_db_peek(obj_db, ptr);
+    object_meta_data_t* obj_rec = obj_db_peek(obj_db, ptr);
 
     assert(!obj_rec);
 
     /*popula o registro*/
-    obj_rec = calloc(1, sizeof(object_db_rec_t));
+    obj_rec = calloc(1, sizeof(object_meta_data_t));
     obj_rec->next = NULL;
     obj_rec->ptr_key = ptr;
     obj_rec->struct_rec = struct_rec;
@@ -147,15 +147,15 @@ static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, 
     }
 
     /*se não for o unico, faz os backups de ponteiro*/
-    object_db_rec_t* node = obj_db->tail;
+    object_meta_data_t* node = obj_db->tail;
     node->next = obj_rec;
     obj_db->tail = obj_rec;
     obj_db->size++;
 }
 
-static object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr){
+static object_meta_data_t* obj_db_peek(object_db_t* obj_db, void* ptr){
    
-    object_db_rec_t* node = obj_db->head;
+    object_meta_data_t* node = obj_db->head;
 
     if(node == NULL){ return NULL; }
 
@@ -173,7 +173,7 @@ static object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr){
 
 void dump_struct_db(struct_db_t* struct_db){
     
-    for(db_rec_t* node = struct_db->head; node; node = node->next){
+    for(struct_meta_data_t* node = struct_db->head; node; node = node->next){
         printf("Estrutura: [ %s ] Tamanho: [ %d ] Número de Campos: [ %d ]\n",
              node->struct_name, node->size, node->num_fields);
 
@@ -182,7 +182,7 @@ void dump_struct_db(struct_db_t* struct_db){
     printf("Quantidade de estruturas registradas: [ %d ]\n", struct_db->size);
 }
 
-void dump_struct_info(db_rec_t* structure){
+void dump_struct_info(struct_meta_data_t* structure){
     
     field_info_t* field = NULL;
     printf("Dump de Estrutura Registrada\n");
@@ -197,7 +197,7 @@ void dump_struct_info(db_rec_t* structure){
 }
 
 void dump_object_db_details(object_db_t* obj_db){
-    object_db_rec_t* node = obj_db->head;
+    object_meta_data_t* node = obj_db->head;
     printf("Número de objetos registrados: [ %d ]\n", obj_db->size);
     while(node){
         printf(" - Tipo da Estrutura: [ %s ]\n - Unidades Alocadas: [ %d ]\n - Referência do Objeto: [ %p ]\n - Próxima Referência: [ %p ]\n",
@@ -208,7 +208,7 @@ void dump_object_db_details(object_db_t* obj_db){
 
 } 
 
-void dump_object_record_details(object_db_rec_t* obj_rec){
+void dump_object_record_details(object_meta_data_t* obj_rec){
 
     field_info_t* f_info = NULL;
 
@@ -281,7 +281,7 @@ void ffree(void* ptr, object_db_t* obj_db){
         return;
     }
     
-    object_db_rec_t* obj_rec = obj_db_peek(obj_db, ptr);
+    object_meta_data_t* obj_rec = obj_db_peek(obj_db, ptr);
 
      if(!obj_rec){
         fprintf(stderr, "[LOG]Objeto não encontrado!\n");
@@ -292,14 +292,14 @@ void ffree(void* ptr, object_db_t* obj_db){
     remove_object_database(obj_rec, obj_db);
 }
 
-void remove_object_database(object_db_rec_t* obj_rec, object_db_t* obj_db){
+void remove_object_database(object_meta_data_t* obj_rec, object_db_t* obj_db){
 
     if(!obj_db){
         fprintf(stderr, "[LOG]Banco de objetos não existe!\n");
         exit(EXIT_FAILURE);
     }
 
-    object_db_rec_t* node = obj_db->head;
+    object_meta_data_t* node = obj_db->head;
 
     if(node == obj_rec){
         obj_db->head = obj_rec->next;
