@@ -34,12 +34,24 @@ struct object_db_rec_t{
     db_rec_t* struct_rec;
 };
 
-struct_db_t* create_struct_db(void){
+struct_db_t* create_struct_database(void){
     struct_db_t* db = (struct_db_t *)malloc(sizeof(struct_db_t));
     db->head = NULL;
     db->tail = NULL;
     db->size = 0;
     return db;
+}
+
+object_db_t* create_object_database(struct_db_t* struct_db){
+
+    object_db_t* obj_db = calloc(1, sizeof(object_db_t));
+
+    obj_db->head = NULL;
+    obj_db->tail = NULL;
+    obj_db->size = 0;
+    obj_db->struct_db = struct_db;
+
+    return obj_db;
 }
 
 /*Registra a estrutura que será utilizada pela aplicação cliente*/
@@ -111,18 +123,6 @@ void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int units){
 
     return ptr;
 }   
-
-object_db_t* create_object_database(struct_db_t* struct_db){
-
-    object_db_t* obj_db = calloc(1, sizeof(object_db_t));
-
-    obj_db->head = NULL;
-    obj_db->tail = NULL;
-    obj_db->size = 0;
-    obj_db->struct_db = struct_db;
-
-    return obj_db;
-}
 
 static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, db_rec_t* struct_rec){
    

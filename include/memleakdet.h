@@ -79,12 +79,12 @@ struct field_info_t{
 void print_struct_db(struct_db_t* struct_db);
 void print_struct_info(db_rec_t* structure);
 void print_object_details(object_db_t* obj_db);
-void* fmalloc(object_db_t* obj_db, const char* struct_name, unsigned int units);
+void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int units);
 static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, db_rec_t* struct_rec);
-object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr);
-struct_db_t* create_struct_db(void);
-object_db_t* create_object_database(void);
-db_rec_t* db_peek(struct_db_t* struct_db, const char* struct_name);
+static object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr);
+struct_db_t* create_struct_database(void);
+object_db_t* create_object_database(struct_db_t* struct_db);
+db_rec_t* db_peek(struct_db_t* struct_db, char* struct_name);
 db_rec_t* register_structure(struct_db_t* db, const char* struct_name, unsigned int sizeof_structure, field_info_t* fields, unsigned int num_fields);
 bool add_struct_to_db(db_rec_t* structure, struct_db_t* db);
 
