@@ -76,9 +76,11 @@ struct field_info_t{
 };
 
 
-void print_struct_db(struct_db_t* struct_db);
-void print_struct_info(db_rec_t* structure);
-void print_object_details(object_db_t* obj_db);
+void dump_struct_db(struct_db_t* struct_db);
+void dump_struct_info(db_rec_t* structure);
+void dump_object_details(object_db_t* obj_db);
+void dump_object_record_details(object_db_rec_t* obj_rec);
+void ffree(void *);
 void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int units);
 static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, db_rec_t* struct_rec);
 static object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr);
