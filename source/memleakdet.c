@@ -265,6 +265,8 @@ void dump_object_record_details(object_db_rec_t* obj_rec){
                     obj_rec->struct_rec->struct_name, obj_i, f_info->name,
                     (void *) *(int *)(curr_obj + f_info->offset));
 
+                    break;
+
             }
             
         }
