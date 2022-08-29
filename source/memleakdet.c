@@ -5,7 +5,6 @@
 
 #include"../include/memleakdet.h"
 
-
 struct struct_db_t{
     struct db_rec_t* head;
     struct db_rec_t* tail;
@@ -73,6 +72,7 @@ db_rec_t* register_structure(struct_db_t* db, const char* struct_name, unsigned 
 
     return struct_rec;
 }
+
 /*Adiciona nosso registro ao banco de registro de estruturas*/
 bool add_struct_to_db(db_rec_t* structure, struct_db_t* db){
 
@@ -100,7 +100,7 @@ db_rec_t* db_peek(struct_db_t* struct_db, char* struct_name){
         
         if(node->next == NULL && strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) != 0){
             fprintf(stderr, "[LOG]Não existe registro da estrutura [ %s ].\nEstruturas registradas:\n", struct_name);
-            print_struct_db(struct_db);
+            dump_struct_db(struct_db);
             return NULL;
         }
         node = node->next;
@@ -171,7 +171,7 @@ static object_db_rec_t* obj_db_peek(object_db_t* obj_db, void* ptr){
     return NULL;
 }
 
-void print_struct_db(struct_db_t* struct_db){
+void dump_struct_db(struct_db_t* struct_db){
     
     for(db_rec_t* node = struct_db->head; node; node = node->next){
         printf("Estrutura: [ %s ] Tamanho: [ %d ] Número de Campos: [ %d ]\n",
@@ -182,7 +182,7 @@ void print_struct_db(struct_db_t* struct_db){
     printf("Quantidade de estruturas registradas: [ %d ]\n", struct_db->size);
 }
 
-void print_struct_info(db_rec_t* structure){
+void dump_struct_info(db_rec_t* structure){
     
     field_info_t* field = NULL;
     printf("Dump de Estrutura Registrada\n");
@@ -196,7 +196,7 @@ void print_struct_info(db_rec_t* structure){
         }
 }
 
-void print_object_details(object_db_t* obj_db){
+void dump_object_details(object_db_t* obj_db){
     object_db_rec_t* node = obj_db->head;
 
     printf("Número de objetos registrados: [ %d ]\n", obj_db->size);
@@ -206,3 +206,67 @@ void print_object_details(object_db_t* obj_db){
         node = node->next;
     }
 } 
+
+void dump_object_record_details(object_db_rec_t* obj_rec){
+
+    field_info_t* f_info = NULL;
+
+    printf("+ Detalhes da Instância\n");
+    printf(" - Tipo  [ %s ]\n", obj_rec->struct_rec->struct_name);
+    
+    for(unsigned int obj_i = 0; obj_i < obj_rec->units; ++obj_i){
+
+                                  /*chunk alocado*/      
+        char *curr_obj = (char *)(obj_rec->ptr_key) + (obj_i * obj_rec->struct_rec->size);
+       
+        for(unsigned int i = 0; i < obj_rec->struct_rec->num_fields; ++i){
+            
+            f_info = &obj_rec->struct_rec->fields[i];
+
+            switch(f_info->data_type){
+                
+                case CHAR:
+
+                    printf(" + [ %s ][%d] -> [ %s ] = [ %d ]\n",
+                    obj_rec->struct_rec->struct_name, obj_i, f_info->name,
+                    (char *)(curr_obj + f_info->offset));
+
+                    break;
+
+                case UINT8:
+                case UINT32:
+                case INT32:
+
+                    printf(" + [ %s ][%d] -> [ %s ] = [ %d ]\n",
+                    obj_rec->struct_rec->struct_name, obj_i, f_info->name,
+                    *(int *)(curr_obj + f_info->offset));
+                    
+                    break;
+
+                case FLOAT:
+
+                    printf(" + [ %s ][%d] -> [ %s ] = [ %d ]\n",
+                    obj_rec->struct_rec->struct_name, obj_i, f_info->name,
+                    *(float *)(curr_obj + f_info->offset));
+
+                    break;
+                
+                case DOUBLE:
+
+                    printf(" + [ %s ][%d] -> [ %s ] = [ %d ]\n",
+                    obj_rec->struct_rec->struct_name, obj_i, f_info->name,
+                    *(double *)(curr_obj + f_info->offset));
+
+                    break;
+
+                case OBJ_POINTER:
+
+                    printf(" + [ %s ][%d] -> [ %s ] = [ %d ]\n",
+                    obj_rec->struct_rec->struct_name, obj_i, f_info->name,
+                    (void *) *(int *)(curr_obj + f_info->offset));
+
+            }
+            
+        }
+    }
+}
