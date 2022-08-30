@@ -20,17 +20,17 @@ struct struct_meta_data_t{
 };
 
 struct object_db_t{
-    struct_db_t* struct_db;
-    object_meta_data_t* head;
-    object_meta_data_t* tail;
+    struct struct_db_t* struct_db;
+    struct object_meta_data_t* head;
+    struct object_meta_data_t* tail;
     unsigned int size;
 };
 
 struct object_meta_data_t{
-    object_meta_data_t* next;
+    struct object_meta_data_t* next;
     void* ptr_key;
-    unsigned int units;
-    struct_meta_data_t* struct_rec;
+    unsigned int num_blocks;
+    struct struct_meta_data_t* struct_rec;
 };
 
 struct_db_t* create_struct_database(void){
@@ -108,7 +108,7 @@ struct_meta_data_t* db_peek(struct_db_t* struct_db, char* struct_name){
     return node;
 }
 
-void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int units){
+void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int num_blocks){
 
     struct_meta_data_t* struct_rec = db_peek(obj_db->struct_db, struct_type);
 
@@ -116,15 +116,15 @@ void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int units){
         fprintf(stderr, "[LOG]Registro de Estrutura não encontrado!\n");
         exit(EXIT_FAILURE);
     }
-    void* ptr = calloc(units, struct_rec->size);
+    void* ptr = calloc(num_blocks, struct_rec->size);
     
     /*adiciona o objeto p/ objetc_db*/
-    register_object(obj_db, ptr, units, struct_rec);
+    register_object(obj_db, ptr, num_blocks, struct_rec);
 
     return ptr;
 }   
 
-static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, struct_meta_data_t* struct_rec){
+static void register_object(object_db_t* obj_db, void* ptr, unsigned int num_blocks, struct_meta_data_t* struct_rec){
    
    /*faz a busca para checar se não se trata do mesmo objeto*/
     object_meta_data_t* obj_rec = obj_db_peek(obj_db, ptr);
@@ -136,7 +136,7 @@ static void register_object(object_db_t* obj_db, void* ptr, unsigned int units, 
     obj_rec->next = NULL;
     obj_rec->ptr_key = ptr;
     obj_rec->struct_rec = struct_rec;
-    obj_rec->units = units;
+    obj_rec->num_blocks = num_blocks;
 
     /*agora adiciona o objeto no banco de objetos*/
     if(obj_db->head == NULL && obj_db->tail == NULL){
@@ -201,7 +201,7 @@ void dump_object_db_details(object_db_t* obj_db){
     printf("Número de objetos registrados: [ %d ]\n", obj_db->size);
     while(node){
         printf(" - Tipo da Estrutura: [ %s ]\n - Unidades Alocadas: [ %d ]\n - Referência do Objeto: [ %p ]\n - Próxima Referência: [ %p ]\n",
-            node->struct_rec->struct_name, node->units, node, node->next);
+            node->struct_rec->struct_name, node->num_blocks, node, node->next);
         node = node->next;
         printf("---------------------------------------------------------------\n\n");
     }
@@ -215,7 +215,7 @@ void dump_object_record_details(object_meta_data_t* obj_rec){
     printf("+ Detalhes da Instância\n");
     printf(" + Tipo  [ %s ]\n", obj_rec->struct_rec->struct_name);
     
-    for(unsigned int obj_i = 0; obj_i < obj_rec->units; ++obj_i){
+    for(unsigned int obj_i = 0; obj_i < obj_rec->num_blocks; ++obj_i){
 
                                   /*chunk alocado*/      
         char *curr_obj = (char *)(obj_rec->ptr_key) + (obj_i * obj_rec->struct_rec->size);
