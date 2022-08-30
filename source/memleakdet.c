@@ -74,7 +74,7 @@ struct_meta_data_t* register_structure(struct_db_t* db, const char* struct_name,
 }
 
 /*Adiciona nosso registro ao banco de registro de estruturas*/
-bool add_struct_to_db(struct_meta_data_t* structure, struct_db_t* db){
+static bool add_struct_to_db(struct_meta_data_t* structure, struct_db_t* db){
 
     if(db->head == NULL && db->tail == NULL){
         db->head = structure;
@@ -92,7 +92,7 @@ bool add_struct_to_db(struct_meta_data_t* structure, struct_db_t* db){
 }
 
 /*Procura por determinado registro(de estrutura) e retorna o endereço para esse registro*/
-struct_meta_data_t* db_peek(struct_db_t* struct_db, char* struct_name){
+static struct_meta_data_t* db_peek(struct_db_t* struct_db, char* struct_name){
 
     struct_meta_data_t* node = struct_db->head;
 
@@ -171,7 +171,7 @@ static object_meta_data_t* obj_db_peek(object_db_t* obj_db, void* ptr){
     return NULL;
 }
 
-void dump_struct_db(struct_db_t* struct_db){
+void dump_struct_db(const struct_db_t* struct_db){
     
     for(struct_meta_data_t* node = struct_db->head; node; node = node->next){
         printf("Estrutura: [ %s ] Tamanho: [ %d ] Número de Campos: [ %d ]\n",
@@ -182,7 +182,7 @@ void dump_struct_db(struct_db_t* struct_db){
     printf("Quantidade de estruturas registradas: [ %d ]\n", struct_db->size);
 }
 
-void dump_struct_meta_data_info(struct_meta_data_t* structure){
+void dump_struct_meta_data_info(const struct_meta_data_t* structure){
     
     field_info_t* field = NULL;
     printf("Dump de Estrutura Registrada\n");
@@ -196,7 +196,7 @@ void dump_struct_meta_data_info(struct_meta_data_t* structure){
         }
 }
 
-void dump_object_db(object_db_t* obj_db){
+void dump_object_db(const object_db_t* obj_db){
     object_meta_data_t* node = obj_db->head;
     printf("Número de objetos registrados: [ %d ]\n", obj_db->size);
     while(node){
@@ -208,7 +208,7 @@ void dump_object_db(object_db_t* obj_db){
 
 } 
 
-void dump_object_record_info(object_meta_data_t* obj_rec){
+void dump_object_record_info(const object_meta_data_t* obj_rec){
 
     field_info_t* f_info = NULL;
 

@@ -84,12 +84,12 @@ void ffree(void* ptr, object_db_t* obj_db);
 void remove_object_database(object_meta_data_t* obj_rec, object_db_t* obj_db);
 void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int num_blocks);
 static void register_object(object_db_t* obj_db, void* ptr, unsigned int num_blocks, struct_meta_data_t* struct_rec);
-object_meta_data_t* obj_db_peek(object_db_t* obj_db, void* ptr);
+static object_meta_data_t* obj_db_peek(object_db_t* obj_db, void* ptr);
 struct_db_t* create_struct_database(void);
 object_db_t* create_object_database(struct_db_t* struct_db);
-struct_meta_data_t* db_peek(struct_db_t* struct_db, char* struct_name);
-static struct_meta_data_t* register_structure(struct_db_t* db, const char* struct_name, unsigned int sizeof_structure, field_info_t* fields, unsigned int num_fields);
-bool add_struct_to_db(struct_meta_data_t* structure, struct_db_t* db);
+static struct_meta_data_t* db_peek(struct_db_t* struct_db, char* struct_name);
+struct_meta_data_t* register_structure(struct_db_t* db, const char* struct_name, unsigned int sizeof_structure, field_info_t* fields, unsigned int num_fields);
+static bool add_struct_to_db(struct_meta_data_t* structure, struct_db_t* db);
 
 
 #endif
