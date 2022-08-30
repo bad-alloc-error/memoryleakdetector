@@ -182,7 +182,7 @@ void dump_struct_db(struct_db_t* struct_db){
     printf("Quantidade de estruturas registradas: [ %d ]\n", struct_db->size);
 }
 
-void dump_struct_info(struct_meta_data_t* structure){
+void dump_struct_meta_data_info(struct_meta_data_t* structure){
     
     field_info_t* field = NULL;
     printf("Dump de Estrutura Registrada\n");
@@ -196,11 +196,11 @@ void dump_struct_info(struct_meta_data_t* structure){
         }
 }
 
-void dump_object_db_details(object_db_t* obj_db){
+void dump_object_db(object_db_t* obj_db){
     object_meta_data_t* node = obj_db->head;
     printf("Número de objetos registrados: [ %d ]\n", obj_db->size);
     while(node){
-        printf(" - Tipo da Estrutura: [ %s ]\n - Unidades Alocadas: [ %d ]\n - Referência do Objeto: [ %p ]\n - Próxima Referência: [ %p ]\n",
+        printf(" - Tipo da Estrutura: [ %s ]\n - Qtde. Blocos Alocados: [ %d ]\n - Referência do Objeto: [ %p ]\n - Próxima Referência: [ %p ]\n",
             node->struct_rec->struct_name, node->num_blocks, node, node->next);
         node = node->next;
         printf("---------------------------------------------------------------\n\n");
@@ -208,7 +208,7 @@ void dump_object_db_details(object_db_t* obj_db){
 
 } 
 
-void dump_object_record_details(object_meta_data_t* obj_rec){
+void dump_object_record_info(object_meta_data_t* obj_rec){
 
     field_info_t* f_info = NULL;
 
@@ -289,6 +289,7 @@ void ffree(void* ptr, object_db_t* obj_db){
     }
 
     free(obj_rec->ptr_key);
+    obj_rec->ptr_key = NULL;
     remove_object_database(obj_rec, obj_db);
 }
 
@@ -320,6 +321,7 @@ void remove_object_database(object_meta_data_t* obj_rec, object_db_t* obj_db){
     node->next = obj_rec->next;
 
     free(obj_rec);
+    obj_rec = NULL;
     obj_db->size--;
 }
     
