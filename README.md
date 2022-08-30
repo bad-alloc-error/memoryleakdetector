@@ -15,11 +15,12 @@ Algumas estruturas:
 
  - object_meta_data_t mantém as informações relacionadas aos objetos instânciados pela aplicação cliente. Cada instância tem sua estrutura object_meta_data_t.
 
- - struct_meta_data_t manter as informações relacionadas as estruturas que serão instânciadas pela aplicação cliente. É dever da aplicação repassar essas informações, mais detalhes abaixo.
-
+ - struct_meta_data_t mantém as informações relacionadas as estruturas que serão instânciadas pela aplicação cliente. É dever da aplicação repassar essas informações, mais detalhes abaixo.
 
 
 <b>Primeira Fase: Structure Database</b>
+
+Tipo: struct_db_t e struct_meta_data_t.
 
 Implementação do registro de estruturas. A lib precisa saber as informações sobre todas as estruturas que estão sendo usadas pela aplicação cliente. É responsabilidade da aplicação cliente dizer a lib durante sua iniciaçização sobre todas as estruturas que serão usadas, nesse projeto esse processo é chamado de registro de estruturas ou "structure database".
 
@@ -28,6 +29,8 @@ A lib irá manter uma "banco de dados" de estruturas que irá armazenar as infor
 A chave usada para encontrar esse registros será o nome da propria estrutura.
 
 <b>Segunda Fase: Object Database</b>
+
+Tipo: object_db_t e object_meta_data_t.
 
 Toda vez que a aplicação cliente alocar novos chunks de memória, pode ser via malloc, calloc, usando outro gerenciador de memoria ou uma função wrapper que é o caso aqui, a lib tem que ser informada sobre essa alocação com os metadados sobre o objeto.
 
