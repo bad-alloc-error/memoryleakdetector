@@ -15,7 +15,7 @@ Algumas estruturas:
 
  - object_meta_data_t mantém as informações relacionadas aos objetos instânciados pela aplicação cliente. Cada instância tem sua estrutura object_meta_data_t.
 
- - struct_meta_data_t manter as informações relacionadas aos objetos instânciados pela aplicação cliente. É dever da aplicação repassar essas informações, mais detalhes abaixo.
+ - struct_meta_data_t manter as informações relacionadas as estruturas que serão instânciadas pela aplicação cliente. É dever da aplicação repassar essas informações, mais detalhes abaixo.
 
 
 
