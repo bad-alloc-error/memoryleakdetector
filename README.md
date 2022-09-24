@@ -17,6 +17,8 @@ Algumas estruturas:
 
  - struct_meta_data_t mantém as informações relacionadas as estruturas que serão instânciadas pela aplicação cliente. É dever da aplicação repassar essas informações, mais detalhes abaixo.
 
+ Dentro do arquivo memleakdet.h contém um layout do objeto instânciado.
+
 
 <b>Primeira Fase: Structure Database</b>
 

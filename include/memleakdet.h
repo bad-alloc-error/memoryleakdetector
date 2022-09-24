@@ -55,7 +55,9 @@ typedef struct object_db_t object_db_t;
 *   em db_rec_t.
 */
 
-
+/*
+    Essa enumeração é usada para a identificação do tipo de um campo dentro de uma struct.
+*/
 typedef enum{
     UINT8,
     UINT32,
@@ -72,7 +74,12 @@ struct field_info_t{
     unsigned int size;
     unsigned int offset;
     data_type_t data_type;
-    char nested_struct_name[MAX_STRUCT_NAME_SIZE];
+
+    /* se um campo dentro da struct for um ponteiro para outra struct esse campo
+        deve ser utilizado para registrar o nome dessa struct.    
+    */
+
+    char nested_struct_name[MAX_STRUCT_NAME_SIZE]; 
 };
 
 
