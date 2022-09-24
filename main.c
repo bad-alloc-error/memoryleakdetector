@@ -43,12 +43,12 @@ int main(){
         {"trabalho", sizeof(char) * 50, offsetof(pessoa_t, trabalho), CHAR, 0}
     };
 
-    db_rec_t* struct1 = register_structure(struct_db, "estudante_t", sizeof(estudante_t), &students_info[0], 3);
-    db_rec_t* struct2 = register_structure(struct_db, "estudante_t", sizeof(estudante_t), &students_info[0], 3);
-    db_rec_t* struct3 = register_structure(struct_db, "estudante_t", sizeof(estudante_t), &students_info[0], 3);
+    struct_meta_data_t* struct1 = register_structure(struct_db, "estudante_t", sizeof(estudante_t), &students_info[0], 3);
+    struct_meta_data_t* struct2 = register_structure(struct_db, "estudante_t", sizeof(estudante_t), &students_info[0], 3);
+    struct_meta_data_t* struct3 = register_structure(struct_db, "estudante_t", sizeof(estudante_t), &students_info[0], 3);
 
-    db_rec_t* struct4 = register_structure(struct_db, "pessoa_t", sizeof(pessoa_t), &pessoas_info[0], 3);
-    db_rec_t* struct5 = register_structure(struct_db, "pessoa_t", sizeof(pessoa_t), &pessoas_info[0], 3);
+    struct_meta_data_t* struct4 = register_structure(struct_db, "pessoa_t", sizeof(pessoa_t), &pessoas_info[0], 3);
+    struct_meta_data_t* struct5 = register_structure(struct_db, "pessoa_t", sizeof(pessoa_t), &pessoas_info[0], 3);
 
 
 
