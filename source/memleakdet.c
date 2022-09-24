@@ -208,29 +208,37 @@ void dump_object_db(const object_db_t* obj_db){
 
 } 
 
+/*
+    Basicamente essa função primeiro vai iterar sobre os blocos que foram alocados
+    pela função fmalloc() onde o ultimo parametro é a quantidade de blocos na heap
+    que deve ser alocado. E dentro desse bloco ele itera sobre o array de fields do
+    objeto struct_meta_data_t e pelo switch atraves do tipo do field ele mostra os valores
+    de forma correta.
+*/
 void dump_object_record_info(const object_meta_data_t* obj_rec){
 
-    field_info_t* f_info = NULL;
+    field_info_t* field_info = NULL;
 
     printf("+ Detalhes da Instância\n");
     printf(" + Tipo  [ %s ]\n", obj_rec->struct_rec->struct_name);
     
-    for(unsigned int obj_i = 0; obj_i < obj_rec->num_blocks; ++obj_i){
+    for(unsigned int block_index = 0; block_index < obj_rec->num_blocks; ++block_index){
 
                                   /*chunk alocado*/      
-        char *curr_obj = (char *)(obj_rec->ptr_key) + (obj_i * obj_rec->struct_rec->size);
+        char *curr_obj = (char *)(obj_rec->ptr_key) + (block_index * obj_rec->struct_rec->size);
        
         for(unsigned int i = 0; i < obj_rec->struct_rec->num_fields; ++i){
             
-            f_info = &obj_rec->struct_rec->fields[i];
+            /* "dumpando" as infos do campo do index corrente */
+            field_info = &obj_rec->struct_rec->fields[i];
 
-            switch(f_info->data_type){
+            switch(field_info->data_type){
                 
                 case CHAR:
 
                     printf(" + [ %s ][%d] -> [ %s ] = [ %s ]\n",
-                    obj_rec->struct_rec->struct_name, obj_i, f_info->name,
-                    (char *)(curr_obj + f_info->offset));
+                    obj_rec->struct_rec->struct_name, block_index, field_info->name,
+                    (char *)(curr_obj + field_info->offset));
 
                     break;
 
@@ -239,32 +247,32 @@ void dump_object_record_info(const object_meta_data_t* obj_rec){
                 case INT32:
 
                     printf(" + [ %s ][%d] -> [ %s ] = [ %d ]\n",
-                    obj_rec->struct_rec->struct_name, obj_i, f_info->name,
-                    *(int *)(curr_obj + f_info->offset));
+                    obj_rec->struct_rec->struct_name, block_index, field_info->name,
+                    *(int *)(curr_obj + field_info->offset));
                     
                     break;
 
                 case FLOAT:
 
                     printf(" + [ %s ][%d] -> [ %s ] = [ %f ]\n",
-                    obj_rec->struct_rec->struct_name, obj_i, f_info->name,
-                    *(float *)(curr_obj + f_info->offset));
+                    obj_rec->struct_rec->struct_name, block_index, field_info->name,
+                    *(float *)(curr_obj + field_info->offset));
 
                     break;
                 
                 case DOUBLE:
 
                     printf(" + [ %s ][%d] -> [ %s ] = [ %f ]\n",
-                    obj_rec->struct_rec->struct_name, obj_i, f_info->name,
-                    *(double *)(curr_obj + f_info->offset));
+                    obj_rec->struct_rec->struct_name, block_index, field_info->name,
+                    *(double *)(curr_obj + field_info->offset));
 
                     break;
 
                 case OBJ_POINTER:
 
                     printf(" + [ %s ][%d] -> [ %s ] = [ %p ]\n",
-                    obj_rec->struct_rec->struct_name, obj_i, f_info->name,
-                    (void *) *(int *)(curr_obj + f_info->offset));
+                    obj_rec->struct_rec->struct_name, block_index, field_info->name,
+                    (void *) *(int *)(curr_obj + field_info->offset));
 
                     break;
 
