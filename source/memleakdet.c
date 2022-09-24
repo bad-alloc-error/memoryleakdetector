@@ -99,7 +99,7 @@ static struct_meta_data_t* db_peek(struct_db_t* struct_db, char* struct_name){
     while(node && !strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) == 0){
         
         if(node->next == NULL && strncmp(node->struct_name, struct_name, MAX_STRUCT_NAME_SIZE) != 0){
-            fprintf(stderr, "[LOG]Não existe registro da estrutura [ %s ].\nEstruturas registradas:\n", struct_name);
+            fprintf(stderr, "[LOG]Não existe registro da estrutura [ %s ].\n[*]Estruturas registradas:\n", struct_name);
             dump_struct_db(struct_db);
             return NULL;
         }
