@@ -108,6 +108,14 @@ static struct_meta_data_t* db_peek(struct_db_t* struct_db, char* struct_name){
     return node;
 }
 
+/*
+    1 - fmalloc aloca blocos contiguos de memória para o objeto do tipo "struct_type" 
+    passado via parametro.
+    2 - Faz o registro do objeto alocado e adiciona no "banco de objetos" instanciados.
+    3 - Associa o objeto com a estrutura, ou seja, associa/linka o objeto instanciado
+    com a estrutura que foi registrada do mesmo objeto. Isso se dá pelo ponteiro
+    struct_meta_data_t* na estrutura object_meta_data_t.
+*/
 void* fmalloc(object_db_t* obj_db, char* struct_type, unsigned int num_blocks){
 
     struct_meta_data_t* struct_rec = db_peek(obj_db->struct_db, struct_type);
